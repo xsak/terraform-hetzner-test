@@ -1,18 +1,9 @@
-variable "hetzner_token" {}
-
-provider "hcloud" {
-	token = var.hetzner_token
+resource "hcloud_ssh_key" "key_test99" {
+  name = "Test99-ssh-key"
+  public_key = file("~/.ssh/id_rsa.pub")
 }
 
-data "hcloud_network" "nw_ahoy" {
-  name = "nw_default"
-}
 
-data "hcloud_ssh_key" "ssh_omni" { 
-  name = "omni"
-}
-
-##########################
 resource "hcloud_network" "nw_test" {
   name = "nw_test99"
   ip_range = "10.111.0.0/16"
@@ -30,7 +21,7 @@ resource "hcloud_server" "srv_test99" {
   image = "ubuntu-18.04"
   server_type = "cx11"
   location = "fsn1"
-  ssh_keys = [ data.hcloud_ssh_key.ssh_omni.id ]
+  ssh_keys = [ hcloud_ssh_key.key_test99.id ]
   labels = {
     projet = "Test",
     BestLabel = "Rekettye"
@@ -56,21 +47,3 @@ resource "hcloud_volume" "test99_volX" {
 //   server_id = hcloud_server.srv_test99.id
 //   automount = true
 // }
-
-##########################
-output "default_network_data" {
-  value = data.hcloud_network.nw_ahoy.ip_range
-}
-
-output "Test99_Server_ip" {
-  value = hcloud_server.srv_test99.ipv4_address
-}
-
-output "Test99_Server_location" {
-  value = hcloud_server.srv_test99.location
-}
-
-output "Test99_Server_status" {
-  value = hcloud_server.srv_test99.status
-}
-
